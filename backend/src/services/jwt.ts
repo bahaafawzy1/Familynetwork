@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change';
-const JWT_TTL = process.env.JWT_TTL || '7d';
+const JWT_SECRET: Secret = process.env.JWT_SECRET || 'dev-secret-change';
+const JWT_TTL: SignOptions['expiresIn'] = (process.env.JWT_TTL as any) || '7d';
 
 export type JwtPayload = { sub: string; role: 'FAMILY' | 'CAREGIVER' | 'ADMIN' };
 

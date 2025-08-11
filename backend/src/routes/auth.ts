@@ -11,7 +11,7 @@ const requestOtpSchema = z.object({
   email: z.string().email().optional(),
   purpose: z.enum(['login', 'verify_phone', 'verify_email']).default('login'),
   channel: z.enum(['sms', 'whatsapp', 'email']).optional(),
-});
+}).refine((d) => !!(d.phoneE164 || d.email), { message: 'phoneE164_or_email_required' });
 
 authRouter.post('/request-otp', async (req, res) => {
   const parse = requestOtpSchema.safeParse(req.body);
@@ -33,7 +33,7 @@ const verifyOtpSchema = z.object({
   email: z.string().email().optional(),
   code: z.string().min(4).max(8),
   role: z.enum(['FAMILY', 'CAREGIVER', 'ADMIN']).optional(),
-});
+}).refine((d) => !!(d.phoneE164 || d.email), { message: 'phoneE164_or_email_required' });
 
 authRouter.post('/verify-otp', async (req, res) => {
   const parse = verifyOtpSchema.safeParse(req.body);

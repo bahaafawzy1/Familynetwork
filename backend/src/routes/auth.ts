@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '../services/prisma.js';
-import { generateOtpAndSend, verifyOtpCode } from '../services/otp.js';
-import { signJwt } from '../services/jwt.js';
+import { prisma } from '../services/prisma';
+import { generateOtpAndSend, verifyOtpCode } from '../services/otp';
+import { signJwt } from '../services/jwt';
 
 export const authRouter = Router();
 
@@ -17,6 +17,7 @@ authRouter.post('/request-otp', async (req, res) => {
   const parse = requestOtpSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const { phoneE164, email, purpose } = parse.data;
+  if (!phoneE164 && !email) return res.status(400).json({ error: 'phone_or_email_required' });
   try {
     const destination = phoneE164 ?? email!;
     const channel = phoneE164 ? 'sms' : 'email';
@@ -39,6 +40,7 @@ authRouter.post('/verify-otp', async (req, res) => {
   const parse = verifyOtpSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const { phoneE164, email, code, role } = parse.data;
+  if (!phoneE164 && !email) return res.status(400).json({ error: 'phone_or_email_required' });
   const destination = phoneE164 ?? email!;
   try {
     const ok = await verifyOtpCode({ destination, code, purpose: 'login' });

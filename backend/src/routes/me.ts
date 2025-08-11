@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { prisma } from '../services/prisma.js';
-import { requireAuth } from '../services/requireAuth.js';
+import { prisma } from '../services/prisma';
+import { requireAuth } from '../services/requireAuth';
 
 export const meRouter = Router();
 
@@ -70,14 +70,19 @@ const upsertCaregiverSchema = z.object({
   bio: z.string().optional(),
   city: z.string().optional(),
   availabilityJson: z.string().optional(),
-});
+}).transform((v) => ({
+  ...v,
+  languages: JSON.stringify(v.languages),
+  specialties: JSON.stringify(v.specialties),
+  certifications: JSON.stringify(v.certifications),
+}));
 
 meRouter.put('/caregiver', async (req, res) => {
   if (req.user!.role !== 'CAREGIVER') return res.status(403).json({ error: 'forbidden' });
   const parse = upsertCaregiverSchema.safeParse(req.body);
   if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
   const userId = req.user!.sub;
-  const data = parse.data;
+  const data = parse.data as any;
   const profile = await prisma.caregiverProfile.upsert({
     where: { userId },
     update: data,

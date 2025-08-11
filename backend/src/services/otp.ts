@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import dayjs from 'dayjs';
-import { prisma } from './prisma.js';
+import { prisma } from './prisma';
 import nodemailer from 'nodemailer';
 import twilio from 'twilio';
 

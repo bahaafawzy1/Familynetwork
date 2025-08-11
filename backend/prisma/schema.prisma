@@ -4,16 +4,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-/// Roles in the system
-enum Role {
-  FAMILY
-  CAREGIVER
-  ADMIN
-}
+// Note: SQLite connector does not support Prisma enums; using String for role
 
 model User {
   id            String        @id @default(cuid())
@@ -24,7 +19,7 @@ model User {
   countryCode   String?       // e.g. EG
   isEmailVerified Boolean     @default(false)
   isPhoneVerified Boolean     @default(false)
-  role          Role
+  role          String        @default("FAMILY") // FAMILY, CAREGIVER, ADMIN
   status        String        @default("ACTIVE") // ACTIVE, SUSPENDED, PENDING_VERIFICATION
 
   // Authentication
@@ -67,9 +62,9 @@ model CaregiverProfile {
   userId       String   @unique
   fullName     String
   gender       String?
-  languages    String[]
-  specialties  String[]   // childcare, eldercare
-  certifications String[]
+  languages    String    // JSON text (array of strings)
+  specialties  String    // JSON text (array of strings)
+  certifications String  // JSON text (array of strings)
   hourlyRateEgp Int?
   bio          String?
   city         String?

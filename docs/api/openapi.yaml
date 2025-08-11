@@ -335,6 +335,23 @@ paths:
                 selfieUrl: { type: string }
       responses:
         '200': { description: Verified }
+  /bookings/mine:
+    get:
+      summary: List my bookings (family or caregiver)
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: My bookings }
+
+  /admin/verification/documents:
+    get:
+      summary: Admin list documents by status
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: query
+          name: status
+          schema: { type: string, enum: [PENDING, APPROVED, REJECTED] }
+      responses:
+        '200': { description: Documents }
 components:
   securitySchemes:
     bearerAuth:

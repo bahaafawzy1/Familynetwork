@@ -26,6 +26,7 @@ import('./routes/carelogs').then(m => app.use('/carelogs', m.carelogsRouter));
 import('./routes/payments').then(m => app.use('/payments', m.paymentsRouter));
 import('./routes/support').then(m => app.use('/support', m.supportRouter));
 import('./routes/verification').then(m => app.use('/verification', m.verificationRouter));
+import('./routes/admin').then(m => app.use('/admin', m.adminRouter));
 
 const port = Number(process.env.PORT || 4000);
 app.listen(port, () => {

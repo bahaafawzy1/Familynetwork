@@ -86,3 +86,12 @@ bookingsRouter.post('/:id/reschedule', async (req, res) => {
   const updated = await prisma.booking.update({ where: { id }, data: { status: 'RESCHEDULED', startTime: new Date(parse.data.startTime), endTime: new Date(parse.data.endTime) } });
   res.json({ booking: updated });
 });
+
+bookingsRouter.get('/mine', async (req, res) => {
+  const family = await prisma.familyProfile.findUnique({ where: { userId: req.user!.sub } });
+  const caregiver = await prisma.caregiverProfile.findUnique({ where: { userId: req.user!.sub } });
+  if (!family && !caregiver) return res.status(403).json({ error: 'forbidden' });
+  const where = family ? { familyId: family.id } : { caregiverId: caregiver!.id };
+  const items = await prisma.booking.findMany({ where, orderBy: { startTime: 'desc' } });
+  res.json({ items });
+});

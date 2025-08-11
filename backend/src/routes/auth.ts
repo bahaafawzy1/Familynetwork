@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../services/prisma';
 import { generateOtpAndSend, verifyOtpCode } from '../services/otp';
 import { signJwt } from '../services/jwt';
+import argon2 from 'argon2';
 
 export const authRouter = Router();
 
@@ -80,5 +81,25 @@ authRouter.post('/verify-otp', async (req, res) => {
   } catch (err: any) {
     req.log.error(err, 'verify-otp failed');
     return res.status(500).json({ error: 'verify_failed' });
+  }
+});
+
+// Password login (for admins)
+const passwordLoginSchema = z.object({ phoneE164: z.string().optional(), email: z.string().email().optional(), password: z.string().min(6) });
+authRouter.post('/password-login', async (req, res) => {
+  const parse = passwordLoginSchema.safeParse(req.body);
+  if (!parse.success) return res.status(400).json({ error: parse.error.flatten() });
+  const { phoneE164, email, password } = parse.data;
+  try {
+    const user = await prisma.user.findFirst({ where: email ? { email } : { phoneE164 } });
+    if (!user || !user.passwordHash) return res.status(401).json({ error: 'invalid_credentials' });
+    const ok = await argon2.verify(user.passwordHash, password);
+    if (!ok) return res.status(401).json({ error: 'invalid_credentials' });
+    const token = signJwt({ sub: user.id, role: user.role });
+    await prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+    return res.json({ token, user: { id: user.id, role: user.role, email: user.email, phoneE164: user.phoneE164, status: user.status } });
+  } catch (err: any) {
+    req.log.error(err, 'password-login failed');
+    return res.status(500).json({ error: 'login_failed' });
   }
 });

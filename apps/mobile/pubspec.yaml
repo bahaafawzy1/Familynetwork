@@ -1,0 +1,21 @@
+name: fcnetwork_mobile
+version: 0.1.0+1
+description: Family Care Network mobile/web app
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+  http: ^1.2.2
+  shared_preferences: ^2.2.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/i18n/

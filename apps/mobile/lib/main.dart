@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'search_booking.dart';
+import 'chat.dart';
 
 const apiBase = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000');
 const firebaseOptionsJson = String.fromEnvironment('FIREBASE_OPTIONS_JSON', defaultValue: '{}');
@@ -206,6 +207,8 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CaregiverSearchScreen())), child: const Text('Find Caregivers')),
+          const SizedBox(height: 8),
+          ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen(threadId: 'demo-thread'))), child: const Text('Open Chat')),
         ]),
       ),
     );

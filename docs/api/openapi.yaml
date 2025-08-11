@@ -216,6 +216,125 @@ paths:
                 endTime: { type: string }
       responses:
         '200': { description: Booking rescheduled }
+  /carelogs:
+    post:
+      summary: Submit care log (caregiver)
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingId: { type: string }
+                meals: { type: object }
+                medication: { type: object }
+                mood: { type: string }
+                photos: { type: array, items: { type: string } }
+                notes: { type: string }
+      responses:
+        '200': { description: Care log created }
+  /carelogs/booking/{id}:
+    get:
+      summary: List care logs by booking (family or caregiver)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Care logs }
+
+  /payments/start:
+    post:
+      summary: Start a payment (family)
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider: { type: string, enum: [PAYMOB, FAWRY] }
+                amountEgp: { type: integer }
+                bookingId: { type: string }
+      responses:
+        '200': { description: Payment initiated }
+
+  /payments/webhook:
+    post:
+      summary: Payment provider webhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider: { type: string }
+                ref: { type: string }
+                status: { type: string }
+      responses:
+        '200': { description: OK }
+
+  /support:
+    get:
+      summary: List support tickets (admin sees all; others see own)
+      security: [ { bearerAuth: [] } ]
+      responses:
+        '200': { description: Tickets }
+    post:
+      summary: Create support ticket
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subject: { type: string }
+                description: { type: string }
+                priority: { type: string, enum: [LOW, NORMAL, HIGH] }
+                tags: { type: array, items: { type: string } }
+      responses:
+        '200': { description: Ticket created }
+
+  /verification/document/status:
+    post:
+      summary: Admin sets document status
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                documentId: { type: string }
+                status: { type: string, enum: [PENDING, APPROVED, REJECTED] }
+      responses:
+        '200': { description: Updated }
+
+  /verification/face/compare:
+    post:
+      summary: Admin triggers face compare (stub)
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caregiverUserId: { type: string }
+                idImageUrl: { type: string }
+                selfieUrl: { type: string }
+      responses:
+        '200': { description: Verified }
 components:
   securitySchemes:
     bearerAuth:

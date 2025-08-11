@@ -22,6 +22,10 @@ app.use('/auth', authRouter);
 app.use('/me', meRouter);
 import('./routes/caregivers').then(m => app.use('/caregivers', m.caregiversRouter));
 import('./routes/bookings').then(m => app.use('/bookings', m.bookingsRouter));
+import('./routes/carelogs').then(m => app.use('/carelogs', m.carelogsRouter));
+import('./routes/payments').then(m => app.use('/payments', m.paymentsRouter));
+import('./routes/support').then(m => app.use('/support', m.supportRouter));
+import('./routes/verification').then(m => app.use('/verification', m.verificationRouter));
 
 const port = Number(process.env.PORT || 4000);
 app.listen(port, () => {

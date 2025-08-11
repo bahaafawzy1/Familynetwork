@@ -20,6 +20,8 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.use('/auth', authRouter);
 app.use('/me', meRouter);
+import('./routes/caregivers').then(m => app.use('/caregivers', m.caregiversRouter));
+import('./routes/bookings').then(m => app.use('/bookings', m.bookingsRouter));
 
 const port = Number(process.env.PORT || 4000);
 app.listen(port, () => {

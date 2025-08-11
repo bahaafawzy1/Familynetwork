@@ -109,6 +109,113 @@ paths:
                 availabilityJson: { type: string }
       responses:
         '200': { description: Caregiver profile }
+  /caregivers:
+    get:
+      summary: Search caregivers
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: language
+          schema: { type: string }
+        - in: query
+          name: specialty
+          schema: { type: string }
+        - in: query
+          name: minRate
+          schema: { type: integer }
+        - in: query
+          name: maxRate
+          schema: { type: integer }
+        - in: query
+          name: page
+          schema: { type: integer }
+        - in: query
+          name: pageSize
+          schema: { type: integer }
+      responses:
+        '200': { description: List of caregivers }
+
+  /bookings:
+    post:
+      summary: Create a booking (family)
+      security: [ { bearerAuth: [] } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                caregiverId: { type: string }
+                startTime: { type: string }
+                endTime: { type: string }
+                type: { type: string, enum: [HOURLY, SHIFT] }
+                notes: { type: string }
+                priceEgp: { type: integer }
+      responses:
+        '200': { description: Booking created }
+
+  /bookings/{id}/accept:
+    post:
+      summary: Accept booking (caregiver)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Booking accepted }
+
+  /bookings/{id}/decline:
+    post:
+      summary: Decline booking (caregiver)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Booking declined }
+
+  /bookings/{id}/cancel:
+    post:
+      summary: Cancel booking (family or caregiver)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Booking canceled }
+
+  /bookings/{id}/reschedule:
+    post:
+      summary: Reschedule booking (family or caregiver)
+      security: [ { bearerAuth: [] } ]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startTime: { type: string }
+                endTime: { type: string }
+      responses:
+        '200': { description: Booking rescheduled }
 components:
   securitySchemes:
     bearerAuth:

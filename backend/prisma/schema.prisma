@@ -44,6 +44,8 @@ model FamilyProfile {
   city         String?
   preferredLanguage String?   // ar, en
   members      FamilyMember[]
+  bookings     Booking[]
+  ratings      Rating[]
 }
 
 model FamilyMember {
@@ -73,6 +75,8 @@ model CaregiverProfile {
   documents    Document[]
   ratingAvg    Float      @default(0)
   ratingCount  Int        @default(0)
+  bookings     Booking[]
+  ratings      Rating[]
 }
 
 model Document {
@@ -99,4 +103,34 @@ model OtpCode {
 
   @@index([destination, purpose])
   @@index([expiresAt])
+}
+
+model Booking {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  familyId       String
+  caregiverId    String
+  startTime      DateTime
+  endTime        DateTime
+  type           String   // HOURLY or SHIFT
+  status         String   @default("PENDING") // PENDING, ACCEPTED, DECLINED, CANCELED, COMPLETED, RESCHEDULED
+  notes          String?
+  priceEgp       Int?
+
+  family         FamilyProfile   @relation(fields: [familyId], references: [id])
+  caregiver      CaregiverProfile @relation(fields: [caregiverId], references: [id])
+}
+
+model Rating {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  familyId     String
+  caregiverId  String
+  bookingId    String
+  score        Int      // 1..5
+  comment      String?
+
+  family       FamilyProfile   @relation(fields: [familyId], references: [id])
+  caregiver    CaregiverProfile @relation(fields: [caregiverId], references: [id])
 }

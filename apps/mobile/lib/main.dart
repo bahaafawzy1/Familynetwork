@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'search_booking.dart';
 
 const apiBase = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000');
 
@@ -185,7 +186,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Welcome')),
+      body: Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CaregiverSearchScreen())), child: const Text('Find Caregivers')),
+        ]),
+      ),
     );
   }
 }

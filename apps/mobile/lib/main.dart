@@ -2,11 +2,28 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'search_booking.dart';
 
 const apiBase = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000');
+const firebaseOptionsJson = String.fromEnvironment('FIREBASE_OPTIONS_JSON', defaultValue: '{}');
+const mixpanelToken = String.fromEnvironment('MIXPANEL_TOKEN', defaultValue: '');
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Firebase init if provided
+  if (firebaseOptionsJson.isNotEmpty && firebaseOptionsJson != '{}') {
+    final opts = Map<String, dynamic>.from(jsonDecode(firebaseOptionsJson) as Map);
+    await Firebase.initializeApp(options: FirebaseOptions(
+      apiKey: opts['apiKey'], appId: opts['appId'], messagingSenderId: opts['messagingSenderId'], projectId: opts['projectId'], storageBucket: opts['storageBucket'], authDomain: opts['authDomain']
+    ));
+  }
+  // Mixpanel
+  if (mixpanelToken.isNotEmpty) {
+    await Mixpanel.init(mixpanelToken, optOutTrackingDefault: false);
+  }
   runApp(const App());
 }
 

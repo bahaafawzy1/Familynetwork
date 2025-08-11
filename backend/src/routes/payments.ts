@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../services/prisma';
 import { requireAuth } from '../services/requireAuth';
+import { paymobStart, fawryStart } from '../services/payments';
 
 export const paymentsRouter = Router();
 paymentsRouter.use(requireAuth);
@@ -21,11 +22,12 @@ paymentsRouter.post('/start', async (req, res) => {
   const { provider, amountEgp, bookingId } = parse.data;
   const payment = await prisma.payment.create({ data: { familyId: family.id, bookingId, provider, amountEgp } });
 
-  // Sandbox stub responses
   if (provider === 'PAYMOB') {
-    return res.json({ payment, redirectUrl: `https://accept.paymob.com/sandbox/pay/${payment.id}` });
+    const { iframeUrl } = await paymobStart(amountEgp, payment.id);
+    return res.json({ payment, redirectUrl: iframeUrl });
   } else {
-    return res.json({ payment, fawryReference: `FAWRY-${payment.id}` });
+    const { payload } = fawryStart(amountEgp, payment.id);
+    return res.json({ payment, fawry: payload });
   }
 });
 
